@@ -29,6 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `addresses` (
   `id` int(11) NOT NULL,
+  `address1` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `address2` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `city` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `state` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
