@@ -5,77 +5,101 @@ $(document).ready(function () {
       keyboard: false,
     }
   );
-  var messageModal = new bootstrap.Modal(
-    document.getElementById("messageModal"),
-    {
-      keyboard: false,
-    }
-  );
   $("#validateModal button[data-role='close']").click(() => {
     validateModal.hide();
+    $("#validateModal .alert").hide();
   });
-  $("#messageModal button[data-role='close']").click(() => {
-    messageModal.hide();
-  });
-  $("input, select").change(function () {
+
+  $("#addressForm").submit(function (event) {
+    event.preventDefault();
+    showLoading("#addressForm button[data-role='validate']");
     var formData = $("#addressForm").serializeObject();
-    console.log(formData);
-    console.log("Changed");
+
     $.post({
       url: "validate.php",
       type: "post",
       dataType: "JSON",
       data: formData,
       success: function (response) {
-        console.log(response);
         if (!response.error) {
-          console.log("Fixed", response);
-          $("#validateModal .modal-body").html(`
-                        Address: ${response.address2} <br>
+          $("#validateModal .modal-body #pills-original").html(`
+                        Address Line 1: ${formData.address1} <br>
+                        Address Line 2: ${formData.address2} <br>
+                        City: ${formData.city} <br>
+                        State: ${formData.state} <br>
+                        Zip: ${formData.zip} <br>
+                    `);
+          $("#validateModal .modal-body #pills-standardized").html(`
+                        Address Line 1: ${formData.address1} <br>
+                        Address Line 2: ${response.address2} <br>
                         City: ${response.city} <br>
                         State: ${response.state} <br>
                         Zip: ${response.zip} <br>
                     `);
           validateModal.show();
-          $("#validateModal button[data-role='update-address']").click(() => {
-            $("#address2").val(response.address2);
-            $("#city").val(response.city);
-            $("#state").val(response.state);
-            $("#zip").val(response.zip);
-            validateModal.hide();
+          $("#validateModal button[data-role='save']").click(() => {
+            showLoading("#validateModal button[data-role='save']");
+            var addressToSave = $(
+              ".address-types .nav-link#pills-original-tab"
+            ).hasClass("active")
+              ? formData
+              : response;
+
+            $.post({
+              url: "submit.php",
+              type: "post",
+              dataType: "JSON",
+              data: addressToSave,
+              success: function (response) {
+                if (response.error) {
+                  $("#validateModal .alert")
+                    .removeClass()
+                    .addClass("alert alert-error")
+                    .html(`There is an issue ${response.text}`)
+                    .show();
+                } else {
+                  $("#validateModal .alert")
+                    .removeClass()
+                    .addClass("alert alert-success")
+                    .html("Address saved successfully!")
+                    .show();
+                  $("form").get(0).reset();
+                }
+              },
+              complete: function () {
+                hideLoading("#validateModal button[data-role='save']");
+              },
+              error: function () {
+                $("#validateModal .alert")
+                  .removeClass()
+                  .addClass("alert alert-error")
+                  .html("Error happened!");
+              },
+            });
           });
         }
       },
-    });
-  });
-
-  $("form").submit(function (event) {
-    event.preventDefault();
-    var formData = $("#addressForm").serializeObject();
-    console.log(formData);
-    $.post({
-      url: "submit.php",
-      type: "post",
-      dataType: "JSON",
-      data: formData,
-      success: function (response) {
-        if (response.error) {
-          $("#messageModal .modal-body").html(`
-                        There is an issue ${response.text}
-                    `);
-
-          messageModal.show();
-        } else {
-          $("#messageModal .modal-body").html(`
-                        Thank you
-                    `);
-          messageModal.show();
-          $("form").get(0).reset();
-        }
+      complete: function () {
+        hideLoading("#addressForm button[data-role='validate']");
+      },
+      error: function () {
+        alert('Error');
       },
     });
   });
 });
+
+// Show loading spinner
+function showLoading(selector) {
+  $(selector).prepend(
+    '<span class="spinner-border spinner-border-sm" style="margin-right: 5px;" role="status" aria-hidden="true"></span>'
+  );
+}
+
+// Hide loading spinner
+function hideLoading(selector) {
+  $(selector).children(".spinner-border").remove();
+}
 
 $.fn.serializeObject = function () {
   var o = {};

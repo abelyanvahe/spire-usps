@@ -1,4 +1,5 @@
 <?php
+$address1 = $_POST["address1"];
 $address2 = $_POST["address2"];
 $zip = $_POST["zip"];
 $state = $_POST["state"];
@@ -40,6 +41,8 @@ if ($xml->Address->Error) {
 }
 
 echo json_encode([
+    // There is a bug related to address 1, so we return it the way we received
+    "address1" => $address1,
     "address2" => $xml->Address->Address2->__toString(),
     "city" => $xml->Address->City->__toString(),
     "state" => $xml->Address->State->__toString(),
