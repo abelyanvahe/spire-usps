@@ -11,7 +11,7 @@ $request_doc_template = <<<EOT
 	<Revision>1</Revision>
 	<Address ID="0">
         <Address1></Address1>
-		<Address2>$address2</Address2>
+		<Address2>$address1</Address2>
 		<City>$city</City>
 		<State>$state</State>
 		<Zip5>$zip</Zip5>
@@ -42,8 +42,8 @@ if ($xml->Address->Error) {
 
 echo json_encode([
     // There is a bug related to address 1, so we return it the way we received
-    "address1" => $address1,
-    "address2" => $xml->Address->Address2->__toString(),
+    "address1" => $xml->Address->Address2->__toString(),
+    "address2" => $address2,
     "city" => $xml->Address->City->__toString(),
     "state" => $xml->Address->State->__toString(),
     "zip" => $xml->Address->Zip5->__toString(),

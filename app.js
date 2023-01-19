@@ -30,7 +30,7 @@ $(document).ready(function () {
                         Zip: ${formData.zip} <br>
                     `);
           $("#validateModal .modal-body #pills-standardized").html(`
-                        Address Line 1: ${formData.address1} <br>
+                        Address Line 1: ${response.address1} <br>
                         Address Line 2: ${response.address2} <br>
                         City: ${response.city} <br>
                         State: ${response.state} <br>
@@ -77,6 +77,8 @@ $(document).ready(function () {
               },
             });
           });
+        } else {
+          alert(response.text);
         }
       },
       complete: function () {
