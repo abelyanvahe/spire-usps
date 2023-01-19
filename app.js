@@ -37,7 +37,7 @@ $(document).ready(function () {
                         Zip: ${response.zip} <br>
                     `);
           validateModal.show();
-          $("#validateModal button[data-role='save']").click(() => {
+          $("#validateModal button[data-role='save']").off('click').click(() => {
             showLoading("#validateModal button[data-role='save']");
             var addressToSave = $(
               ".address-types .nav-link#pills-original-tab"
